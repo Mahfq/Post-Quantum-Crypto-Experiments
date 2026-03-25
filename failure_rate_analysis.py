@@ -117,7 +117,7 @@ def failure_rate_vs_eta(eta_values, num_trials=NUM_TRIALS):
 
 # ── Visualisation ─────────────────────────────────────────────────────
 
-def plot_results(failure_rates, save_path="taux_echec_dechiffrement.png"):
+def plot_results(failure_rates, save_path="Decryption Failure Rate Analysis.png"):
     etas      = list(failure_rates.keys())
     rates_exp = [failure_rates[e] for e in etas]
     rates_theo= [analytical_dfr(e) for e in etas]

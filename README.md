@@ -144,7 +144,7 @@ coeffs = bits_a.sum(axis=1) - bits_b.sum(axis=1)  # dans [-η, +η], temps const
 
 Voici le résultat produit par `failure_rate_analysis.py` :
 
-![Decryption Failure Rate Analysis](decryption_failure_rate.png)
+![Analyse du taux d'échec](Decryption%20Failure%20Rate%20Analysis.png)
 
 Pour rappel, le principe du déchiffrement est le suivant. On calcule $w = v - s \cdot u$ et en développant algébriquement on obtient :
 
