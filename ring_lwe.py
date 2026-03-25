@@ -9,10 +9,6 @@ ETA: int = 2      # Paramètre CBD (η = 2 dans Kyber-512)
 Q_HALF: int = Q // 2
 
 
-# ══════════════════════════════════════════════════════════════════════
-#  Arithmétique des polynômes dans R_q = Z_q[X]/(X^n + 1)
-# ══════════════════════════════════════════════════════════════════════
-
 class RqPolynomial:
     """
     Représente un élément de l'anneau R_q = Z_q[X] / (X^n + 1).
@@ -98,7 +94,10 @@ def zero_poly(n: int = N, q: int = Q) -> RqPolynomial:
 
 
 def random_poly(n: int = N, q: int = Q, rng: np.random.Generator | None = None) -> RqPolynomial:
+    #Si pas de focntion 
     if rng is None:
         rng = np.random.default_rng()
+
+    #On tire n nombres alateoires compirs entre 0 et q-1 
     coeffs = rng.integers(0, q, size=n, dtype=np.int64)
     return RqPolynomial(coeffs, n, q)
