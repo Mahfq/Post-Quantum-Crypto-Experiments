@@ -59,15 +59,15 @@ class RqPolynomial:
                 mais la convolution numpy est suffisante ici pour la pédagogie.
         """
 
-        # Convolve c'est la multiplication clasie entre 2 plonymes 
+        # Convolve c'est la multiplication classique entre 2 polynômes 
         # Exemple : 2 + 3X = [2, 3] et 4 + 5X = [4, 5]
         # Donc convolve([2, 3], [4, 5]) = [8, 22, 15] (soit 8 + 22X + 15X^2).
         product = np.convolve(self.coeffs, other.coeffs)
 
-        # Zeros crée un tableau de taille n rempli de 0 de 64 bytes.
+        # Zeros crée un tableau de taille n rempli de 0 de 64 bits.
         result = np.zeros(self.n, dtype=np.int64)
 
-        #Processus espliquer dans la doc d la focntion 
+        #Processus expliqué dans la doc de la fonction 
         for i, c in enumerate(product):
             if i < self.n:
                 result[i] += c          #  X^i  →  X^i
@@ -94,10 +94,37 @@ def zero_poly(n: int = N, q: int = Q) -> RqPolynomial:
 
 
 def random_poly(n: int = N, q: int = Q, rng: np.random.Generator | None = None) -> RqPolynomial:
-    #Si pas de focntion 
+    # Si pas de fonction rng fournie, on en crée une par défaut pour le hasard.
     if rng is None:
         rng = np.random.default_rng()
 
-    #On tire n nombres alateoires compirs entre 0 et q-1 
+    #On tire n nombres aléatoires compris entre 0 et q-1 
     coeffs = rng.integers(0, q, size=n, dtype=np.int64)
     return RqPolynomial(coeffs, n, q)
+
+def cbd_sample(eta: int = ETA, n: int = N, q: int = Q, rng: np.random.Generator | None = None) -> RqPolynomial:
+    """
+    Échantillonne un polynôme "petit" depuis la distribution binomiale
+    centrée (Centered Binomial Distribution).
+
+    Pour chaque coefficient :
+        On tire (a_1, ..., a_eta) et (b_1, ..., b_eta) qui valent 0 ou 1.
+        Le coefficient final est la somme des a_i moins la somme des b_i.
+    
+    Cela permet de générer un bruit cryptographique très petit (compris entre 
+    -eta et +eta) centré autour de 0, ce qui simule une courbe de Gauss.
+    """
+    
+    # Si pas de fonction rng fournie, on en crée une par défaut pour le hasard.
+    if rng is None:
+        rng = np.random.default_rng()
+    
+    # On crée un tableau de n lignes et eta colonnes avec 0 ou 1 
+    bits_a = rng.integers(0, 2, size=(n, eta), dtype=np.int64)
+    bits_b = rng.integers(0, 2, size=(n, eta), dtype=np.int64)
+    
+    # sum(axis=1) permet de sommer tous les éléments de chaque ligne
+    # Exemple si bits_a = [[1, 0], [1, 1],[0, 0]] => bits_a.sum(axis=1) = [1, 2, 0]
+    coeffs = bits_a.sum(axis=1) - bits_b.sum(axis=1)
+    
+    return RqPolynomial(coeffs % q, n, q)
